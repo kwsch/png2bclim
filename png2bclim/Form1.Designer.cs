@@ -32,6 +32,8 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.GB_Options = new System.Windows.Forms.GroupBox();
+            this.L_SQREC = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.CB_Out = new System.Windows.Forms.ComboBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.CHK_NoCrop = new System.Windows.Forms.CheckBox();
@@ -48,8 +50,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.L_SQREC = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.GB_Options.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -98,6 +98,27 @@
             this.GB_Options.TabIndex = 10;
             this.GB_Options.TabStop = false;
             this.GB_Options.Text = "BCLIM Output Format";
+            // 
+            // L_SQREC
+            // 
+            this.L_SQREC.AutoSize = true;
+            this.L_SQREC.Location = new System.Drawing.Point(9, 46);
+            this.L_SQREC.Name = "L_SQREC";
+            this.L_SQREC.Size = new System.Drawing.Size(101, 13);
+            this.L_SQREC.TabIndex = 2;
+            this.L_SQREC.Text = "Square / Rectangle";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Items.AddRange(new object[] {
+            "0 - Rectangle (>64)",
+            "1 - Square (Override)"});
+            this.comboBox1.Location = new System.Drawing.Point(7, 62);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 1;
             // 
             // CB_Out
             // 
@@ -275,27 +296,6 @@
             this.label8.TabIndex = 13;
             this.label8.Text = "Tile Height:";
             // 
-            // comboBox1
-            // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "0 - Rectangle (>64)",
-            "1 - Square (Override)"});
-            this.comboBox1.Location = new System.Drawing.Point(7, 62);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 1;
-            // 
-            // L_SQREC
-            // 
-            this.L_SQREC.AutoSize = true;
-            this.L_SQREC.Location = new System.Drawing.Point(9, 46);
-            this.L_SQREC.Name = "L_SQREC";
-            this.L_SQREC.Size = new System.Drawing.Size(101, 13);
-            this.L_SQREC.TabIndex = 2;
-            this.L_SQREC.Text = "Square / Rectangle";
-            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -311,7 +311,7 @@
             this.Controls.Add(this.button1);
             this.MinimumSize = new System.Drawing.Size(385, 210);
             this.Name = "Form1";
-            this.Text = "BCLIM Tool";
+            this.Text = "png2bclim";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.GB_Options.ResumeLayout(false);
             this.GB_Options.PerformLayout();

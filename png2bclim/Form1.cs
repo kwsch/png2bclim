@@ -81,6 +81,7 @@ namespace png2bclim
                 fp = "new_" + fp.Substring(fp.IndexOf('_') + 1);
                 string pp = Path.GetDirectoryName(path);
                 string newPath = Path.Combine(pp, fp + ".bclim");
+                groupBox2.Visible = false;
                 File.WriteAllBytes(newPath, ms.ToArray());
             }
         }
