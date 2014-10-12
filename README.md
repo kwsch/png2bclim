@@ -11,7 +11,7 @@ A new BCLIM file will be saved in the same directory as "new_[filename].blclim"
 
 Drag & Drop (or via the Open Button) to convert a BCLIM to PNG.
 Input format should be automatically detected.
-This program does not support Ericsson Compressed BCLIMs (etc1/etc1A4).
+This program currently does not support bclim creation for Ericsson Compressed BCLIMs (etc1/etc1A4) or HILO8.
 A new PNG file will be saved in the same directory as "[filename].png"
 
 Example: Inserting an Image...
