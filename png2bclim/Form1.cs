@@ -3,11 +3,17 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace png2bclim
 {
     public partial class Form1 : Form
     {
+        [DllImport("ETC1.dll", EntryPoint = "ConvertETC1", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void ConvertETC1(IntPtr dataout, ref UInt32 dataoutsize, IntPtr datain, ref UInt32 datainsize, UInt16 wd, UInt16 ht, bool alpha);
+
         public Form1()
         {
             InitializeComponent();
@@ -57,7 +63,15 @@ namespace png2bclim
                 else
                 {
                     bclimformat = Convert.ToInt16(fc.ToString(), 16);
-                    writeGeneric(bclimformat, mBitmap, ref ms);
+                    try
+                    {
+                        writeGeneric(bclimformat, mBitmap, ref ms);
+                    }
+                    catch (Exception e)
+                    {
+                        System.Media.SystemSounds.Beep.Play();
+                        System.Diagnostics.Debug.WriteLine(e.ToString());
+                    }
                 }
 
                 long datalength = ms.Length;
@@ -107,7 +121,7 @@ namespace png2bclim
 
             // Interpret data.
             int f = bclim.FileFormat;
-            if (f == 4 || f == 10 || f == 11 || f > 13)
+            if (f == 4 || f > 13)
             {
                 System.Media.SystemSounds.Exclamation.Play(); 
                 return; 
@@ -117,6 +131,8 @@ namespace png2bclim
             if (f == 7 && BitConverter.ToUInt16(bclim.Data, 0) == 2 && 0 == 0)
                 // PKM XY Format 7 (Color Palette)
                 img = getIMG_XY7(bclim);
+            else if (f == 10)
+                img = getIMG_ETC(bclim); // etc1
             else
                 img = getIMG(bclim);
 
@@ -265,6 +281,107 @@ namespace png2bclim
                 PaletteBox.Width = 2 + 8 * ca.Length;
                 PaletteBox.Height = 2 + 8;
                 PaletteBox.BorderStyle = BorderStyle.FixedSingle;
+            }
+            return img;
+        }
+        private Bitmap getIMG_ETC(CLIM bclim)
+        {
+            Bitmap img = new Bitmap(Math.Max(nlpo2(bclim.Width), 16), Math.Max(nlpo2(bclim.Height), 16));
+            string dllpath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location) + "\\ETC1.dll";
+            if (!File.Exists(dllpath)) File.WriteAllBytes(dllpath, Properties.Resources.ETC1);
+
+            if (!File.Exists(dllpath)) File.WriteAllBytes(dllpath, Properties.Resources.ETC1);
+            try
+            {
+                /* http://jul.rustedlogic.net/thread.php?id=17312
+                 * Much of this code is taken/modified from Tharsis. Thank you to Tharsis's creator, xdaniel.
+                 */
+
+                /* Get compressed data & handle to it */
+                byte[] textureData = bclim.Data;
+                //textureData = switchEndianness(textureData, 0x10);
+                ushort[] input = new ushort[textureData.Length / sizeof(ushort)];
+                Buffer.BlockCopy(textureData, 0, input, 0, textureData.Length);
+                GCHandle pInput = GCHandle.Alloc(input, GCHandleType.Pinned);
+
+                /* Marshal data around, invoke ETC1.dll for conversion, etc */
+                UInt32 size1 = 0, size2 = 0;
+                UInt16 wd = (ushort)img.Width, ht = (ushort)img.Height;
+                ConvertETC1(IntPtr.Zero, ref size1, IntPtr.Zero, ref size2, wd, ht, bclim.FileFormat == 0xB); //true = etc1a4, false = etc1
+                // System.Diagnostics.Debug.WriteLine(size1);
+                uint[] output = new uint[size1];
+                GCHandle pOutput = GCHandle.Alloc(output, GCHandleType.Pinned);
+                ConvertETC1(pOutput.AddrOfPinnedObject(), ref size1, pInput.AddrOfPinnedObject(), ref size2, wd, ht, bclim.FileFormat == 0xB);
+                pOutput.Free();
+                pInput.Free();
+
+                /* Unscramble if needed // could probably be done in ETC1.dll, it's probably pretty damn ugly, but whatever... */
+                /* Non-square code blocks could need some cleanup, verification, etc. as well... */
+                uint[] finalized = new uint[output.Length];
+
+                //Act if it's square because BCLIM swizzling is stupid
+                Buffer.BlockCopy(output, 0, finalized, 0, finalized.Length);
+
+                byte[] tmp = new byte[finalized.Length];
+                Buffer.BlockCopy(finalized, 0, tmp, 0, tmp.Length);
+                int h = img.Height;
+                int w = img.Width;
+                byte[] imgData = tmp;
+                // System.Diagnostics.Debug.WriteLine("COPIED IMAGE DATA");
+                for (int i = 0; i < img.Width; i++)
+                {
+                    for (int j = 0; j < img.Height; j++)
+                    {
+                        int k = (j + i * img.Height) * 4;
+                        img.SetPixel(i, j, Color.FromArgb(imgData[k + 3], imgData[k], imgData[k + 1], imgData[k + 2]));
+                    }
+                }
+                //image is 13  instead of 12
+                //         24             34
+                img.RotateFlip(RotateFlipType.Rotate90FlipX);
+                if (wd > ht)
+                {
+                    //image is now in appropriate order, but the shifting done been fucked up. Let's fix that.
+                    Bitmap img2 = new Bitmap(Math.Max(nlpo2(bclim.Width), 16), Math.Max(nlpo2(bclim.Height), 16));
+                    for (int y = 0; y < Math.Max(nlpo2(bclim.Width), 16); y += 8)
+                    {
+                        for (int x = 0; x < Math.Max(nlpo2(bclim.Height), 16); x++)
+                        {
+                            for (int j = 0; j < 8; j++) //treat every 8 vertical pixels as 1 pixel for purposes of calculation, add to offset later.
+                            {
+                                int x1 = (x + ((y / 8) * h)) % img2.Width; //reshift x
+                                int y1 = ((x + ((y / 8) * h)) / img2.Width) * 8; //reshift y
+                                img2.SetPixel(x1, y1 + j, img.GetPixel(x, y + j)); //reswizzle
+                            }
+                        }
+                    }
+                    return img2;
+                }
+                else if (ht > wd)
+                {
+                    Bitmap img2 = new Bitmap(Math.Max(nlpo2(bclim.Width), 16), Math.Max(nlpo2(bclim.Height), 16));
+                    for (int y = 0; y < Math.Max(nlpo2(bclim.Width), 16); y += 8)
+                    {
+                        for (int x = 0; x < Math.Max(nlpo2(bclim.Height), 16); x++)
+                        {
+                            for (int j = 0; j < 8; j++) //treat every 8 vertical pixels as 1 pixel for purposes of calculation, add to offset later.
+                            {
+                                int x1 = x % img2.Width; //reshift x
+                                int y1 = ((x + ((y / 8) * h)) / img2.Width) * 8; //reshift y
+                                img2.SetPixel(x1, y1 + j, img.GetPixel(x, y + j)); //reswizzle
+                            }
+                        }
+                    }
+                    return img2;
+                }
+            }
+            catch (System.IndexOutOfRangeException)
+            {
+                //
+            }
+            catch (System.AccessViolationException)
+            {
+                //
             }
             return img;
         }
