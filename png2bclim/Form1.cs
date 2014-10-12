@@ -315,11 +315,11 @@ namespace png2bclim
                 pOutput.Free();
                 pInput.Free();
 
-                /* Unscramble if needed // could probably be done in ETC1.dll, it's probably pretty damn ugly, but whatever... */
+                /* Unscramble if needed // could probably be done in ETC1.dll, it's probably pretty ugly, but whatever... */
                 /* Non-square code blocks could need some cleanup, verification, etc. as well... */
                 uint[] finalized = new uint[output.Length];
 
-                //Act if it's square because BCLIM swizzling is stupid
+                // Act if it's square because BCLIM swizzling is stupid
                 Buffer.BlockCopy(output, 0, finalized, 0, finalized.Length);
 
                 byte[] tmp = new byte[finalized.Length];
@@ -341,7 +341,7 @@ namespace png2bclim
                 img.RotateFlip(RotateFlipType.Rotate90FlipX);
                 if (wd > ht)
                 {
-                    //image is now in appropriate order, but the shifting done been fucked up. Let's fix that.
+                    //image is now in appropriate order, but the shifting is messed up. Let's fix that.
                     Bitmap img2 = new Bitmap(Math.Max(nlpo2(bclim.Width), 16), Math.Max(nlpo2(bclim.Height), 16));
                     for (int y = 0; y < Math.Max(nlpo2(bclim.Width), 16); y += 8)
                     {
@@ -349,9 +349,9 @@ namespace png2bclim
                         {
                             for (int j = 0; j < 8; j++) //treat every 8 vertical pixels as 1 pixel for purposes of calculation, add to offset later.
                             {
-                                int x1 = (x + ((y / 8) * h)) % img2.Width; //reshift x
-                                int y1 = ((x + ((y / 8) * h)) / img2.Width) * 8; //reshift y
-                                img2.SetPixel(x1, y1 + j, img.GetPixel(x, y + j)); //reswizzle
+                                int x1 = (x + ((y / 8) * h)) % img2.Width;          //reshift x
+                                int y1 = ((x + ((y / 8) * h)) / img2.Width) * 8;    //reshift y
+                                img2.SetPixel(x1, y1 + j, img.GetPixel(x, y + j));  //reswizzle
                             }
                         }
                     }
@@ -366,9 +366,9 @@ namespace png2bclim
                         {
                             for (int j = 0; j < 8; j++) //treat every 8 vertical pixels as 1 pixel for purposes of calculation, add to offset later.
                             {
-                                int x1 = x % img2.Width; //reshift x
-                                int y1 = ((x + ((y / 8) * h)) / img2.Width) * 8; //reshift y
-                                img2.SetPixel(x1, y1 + j, img.GetPixel(x, y + j)); //reswizzle
+                                int x1 = x % img2.Width;                            //reshift x
+                                int y1 = ((x + ((y / 8) * h)) / img2.Width) * 8;    //reshift y
+                                img2.SetPixel(x1, y1 + j, img.GetPixel(x, y + j));  //reswizzle
                             }
                         }
                     }
