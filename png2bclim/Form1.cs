@@ -218,9 +218,9 @@ namespace png2bclim
                     case 0xC:  // L4
                     case 0xD:  // A4        // 4bit - Do 2 pixels at a time.
                         val = br.ReadByte();
-                        img.SetPixel((int)x, (int)y, DecodeColor(val >> 4, f));
+                        img.SetPixel((int)x, (int)y, DecodeColor(val & 0xF, f)); // lowest bits for the low pixel
                         i++; x++;
-                        c = DecodeColor(val & 0xF, f);
+                        c = DecodeColor(val >> 4, f);   // highest bits for the high pixel
                         break;
                     case 0xA:  // ETC1
                     case 0xB:  // ETC1A4
