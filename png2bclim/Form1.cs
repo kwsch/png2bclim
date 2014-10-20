@@ -131,7 +131,7 @@ namespace png2bclim
             if (f == 7 && BitConverter.ToUInt16(bclim.Data, 0) == 2 && 0 == 0)
                 // PKM XY Format 7 (Color Palette)
                 img = getIMG_XY7(bclim);
-            else if (f == 10)
+            else if (f == 10 || f == 11)
                 img = getIMG_ETC(bclim); // etc1
             else
                 img = getIMG(bclim);
@@ -739,7 +739,7 @@ namespace png2bclim
             if (Directory.Exists(files[0])) // allow folder
                 files = Directory.GetFiles(files[0], "*.*", SearchOption.TopDirectoryOnly);
             for (int i = 0; i < files.Length; i++) // allow bulk
-                openFile(files[0]);
+                openFile(files[i]);
         }        
         
         /// <summary>
