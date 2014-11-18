@@ -121,7 +121,7 @@ namespace png2bclim
 
             // Interpret data.
             int f = bclim.FileFormat;
-            if (f == 4 || f > 13)
+            if (f > 13)
             {
                 System.Media.SystemSounds.Exclamation.Play(); 
                 return; 
@@ -517,7 +517,7 @@ namespace png2bclim
                         case 1: bz.Write((byte)GetA8(c)); break;                // A8
                         case 2: bz.Write((byte)GetLA4(c)); break;               // LA4(4)
                         case 3: bz.Write((ushort)GetLA8(c)); break;             // LA8(8)
-                        case 4: throw new Exception("HILO8 not supported."); 
+                        case 4: bz.Write((ushort)GetHILO8(c)); break;           // HILO8
                         case 5: bz.Write((ushort)GetRGB565(c)); break;          // RGB565
                         case 6:
                             {
@@ -594,9 +594,10 @@ namespace png2bclim
                     red = (byte)((val >> 8 & 0xFF));
                     alpha = (byte)(val & 0xFF);
                     return Color.FromArgb(alpha, red, red, red);
-                case 4: // HILO8 - use only the HI
+                case 4: // HILO8
                     red = (byte)(val >> 8);
-                    return Color.FromArgb(alpha, red, red, red);
+                    green = (byte)(val & 0xFF);
+                    return Color.FromArgb(alpha, red, green, 0xFF);
                 case 5: // RGB565
                     red = Convert5To8[(val >> 11) & 0x1F];
                     green = (byte)(((val >> 5) & 0x3F) * 4);
@@ -655,9 +656,12 @@ namespace png2bclim
         }       // LA4
         private ushort GetLA8(Color c)
         {
-            return (byte)((c.A) + (c.R) << 8);
+            return (ushort)((c.A) + ((c.R) << 8));
         }     // LA8
-        // HILO
+        private ushort GetHILO8(Color c)
+        {
+            return (ushort)((c.G) + ((c.R) << 8));
+        } // HILO8
         private ushort GetRGB565(Color c)
         {
             int val = 0;
