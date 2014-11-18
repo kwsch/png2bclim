@@ -656,11 +656,11 @@ namespace png2bclim
         }       // LA4
         private ushort GetLA8(Color c)
         {
-            return (ushort)((c.A) + (c.R) << 8);
+            return (ushort)((c.A) + ((c.R) << 8));
         }     // LA8
         private ushort GetHILO8(Color c)
         {
-            return (ushort)((c.G) + (c.R) << 8);
+            return (ushort)((c.G) + ((c.R) << 8));
         } // HILO8
         private ushort GetRGB565(Color c)
         {
