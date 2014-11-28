@@ -263,13 +263,20 @@ namespace png2bclim
                     y += (uint)(tile / p) * 8;
 
                     byte val = br.ReadByte();
-                    if (colors < 0x10) // Handle 2 pixels at a time
+                    if (colors <= 0x10) // Handle 2 pixels at a time
                     {
                         c = ca[val & 0xF];
                         img.SetPixel((int)x, (int)y, ca[val >> 4]);
                         x++; i++; val &= 0xF;
+                        img.SetPixel((int)x, (int)y, ca[val]);
                     }
-                    img.SetPixel((int)x, (int)y, ca[val]);
+                    else //1bpp instead of .5, handle 2 pixels at a time the same way for no reason
+                    {
+                        c = ca[val];
+                        img.SetPixel((int)x, (int)y, ca[val]);
+                        x++; i++; val = br.ReadByte();
+                        img.SetPixel((int)x, (int)y, ca[val]);
+                    }
                 }
                 // Palette Box
                 Bitmap palette = new Bitmap(ca.Length * 8, 8, PixelFormat.Format32bppArgb);
