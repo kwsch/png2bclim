@@ -377,7 +377,7 @@ namespace CTR
                 if (under16colors)
                     div = 2;
 
-                if (colors > 70) throw new Exception("Too many colors! Can't write as a color palette.");
+                if (colors > 255) throw new Exception("Too many colors! Can't write as a color palette.");
 
                 // Set up a new reverse image to build into.
                 int w = gcm(img.Width, 8);
@@ -442,8 +442,12 @@ namespace CTR
                 // Write Pixel Data
                 for (uint i = 0; i < d; i++)
                     bz.Write(pixelarray[i]);
+
                 // Write Padding
-                while (pixelcolors.Length < nlpo2((int)pixelcolors.Length))
+                int finalSize = nlpo2((int)pixelcolors.Length);
+                if (finalSize <= nlpo2(img.Width)*nlpo2(img.Height)) 
+                    finalSize <<= 1; // 4+Palette+Pixels needs the default space.
+                while (pixelcolors.Length < finalSize)
                     bz.Write((byte)0);
                 // Copy to main CLIM.
                 pixelcolors.Position = 0; pixelcolors.CopyTo(ms);
