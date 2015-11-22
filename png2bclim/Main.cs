@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Drawing;
 using System.Windows.Forms;
@@ -58,14 +59,14 @@ namespace png2bclim
         // File Generation
         public void makeBMP(string path)
         {
-            var bclim = BCLIM.analyze(path);
+            BCLIM.CLIM bclim = BCLIM.analyze(path);
             GB_Details.Visible = true;
             L_Details.Text = String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}", Environment.NewLine,
                 bclim.FileFormat, bclim.Width, bclim.Height, bclim.TileWidth, bclim.TileHeight);
 
             var img = BCLIM.makeBMP(path, CHK_AutoSavePNG.Checked, !CHK_NoCrop.Checked);
             if (img == null) return;
-            PaletteBox.Visible = BitConverter.ToUInt16(bclim.Data, 0) == 2 && bclim.FileFormat == 7;
+            showPaletteBox(bclim);
             PB_BCLIM.Image = img;
         }
         public void makeBCLIM(string path)
@@ -89,9 +90,25 @@ namespace png2bclim
 
             PB_BCLIM.Image = new Bitmap(path);
             var bclim = BCLIM.analyze(sfd.FileName);
+            showPaletteBox(bclim);
             GB_Details.Visible = true;
             L_Details.Text = String.Format("{1}{0}{2}{0}{3}{0}{4}{0}{5}", Environment.NewLine,
                 bclim.FileFormat, bclim.Width, bclim.Height, bclim.TileWidth, bclim.TileHeight);
+        }
+        public void showPaletteBox(BCLIM.CLIM bclim)
+        {
+            // Palette Box
+            PaletteBox.Visible = BitConverter.ToUInt16(bclim.Data, 0) == 2 && bclim.FileFormat == 7;
+            if (!PaletteBox.Visible) return;
+
+            int colors = BitConverter.ToUInt16(bclim.Data, 2);
+            Color[] ca = new Color[colors];
+            for (int i = 0; i < colors; i++)
+                ca[i] = BCLIM.DecodeColor(BitConverter.ToUInt16(bclim.Data, 4 + 2 * i), 7);
+            Bitmap palette = new Bitmap(ca.Length * 8, 8, PixelFormat.Format32bppArgb);
+            for (int x = 0; x < ca.Length * 8; x++)
+                for (int y = 0; y < 8; y++) { palette.SetPixel(x, y, ca[x / 8]); }
+            PaletteBox.Image = palette; PaletteBox.Visible = true;
         }
 
         // User Experience

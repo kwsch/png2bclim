@@ -32,6 +32,7 @@
             this.TB_Path = new System.Windows.Forms.TextBox();
             this.PB_BCLIM = new System.Windows.Forms.PictureBox();
             this.GB_BCLIMOptions = new System.Windows.Forms.GroupBox();
+            this.CHK_AutoSaveBCLIM = new System.Windows.Forms.CheckBox();
             this.L_SQREC = new System.Windows.Forms.Label();
             this.CB_Shape = new System.Windows.Forms.ComboBox();
             this.CB_OutFormat = new System.Windows.Forms.ComboBox();
@@ -40,9 +41,8 @@
             this.CHK_AutoSavePNG = new System.Windows.Forms.CheckBox();
             this.PaletteBox = new System.Windows.Forms.PictureBox();
             this.GB_Details = new System.Windows.Forms.GroupBox();
-            this.L_Details = new System.Windows.Forms.Label();
-            this.CHK_AutoSaveBCLIM = new System.Windows.Forms.CheckBox();
             this.L_Meta = new System.Windows.Forms.Label();
+            this.L_Details = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.PB_BCLIM)).BeginInit();
             this.GB_BCLIMOptions.SuspendLayout();
             this.GB_PNGOptions.SuspendLayout();
@@ -94,6 +94,16 @@
             this.GB_BCLIMOptions.TabIndex = 10;
             this.GB_BCLIMOptions.TabStop = false;
             this.GB_BCLIMOptions.Text = "BCLIM Output Format";
+            // 
+            // CHK_AutoSaveBCLIM
+            // 
+            this.CHK_AutoSaveBCLIM.AutoSize = true;
+            this.CHK_AutoSaveBCLIM.Location = new System.Drawing.Point(13, 91);
+            this.CHK_AutoSaveBCLIM.Name = "CHK_AutoSaveBCLIM";
+            this.CHK_AutoSaveBCLIM.Size = new System.Drawing.Size(106, 17);
+            this.CHK_AutoSaveBCLIM.TabIndex = 3;
+            this.CHK_AutoSaveBCLIM.Text = "Autosave BCLIM";
+            this.CHK_AutoSaveBCLIM.UseVisualStyleBackColor = true;
             // 
             // L_SQREC
             // 
@@ -178,6 +188,7 @@
             this.PaletteBox.Location = new System.Drawing.Point(153, 37);
             this.PaletteBox.Name = "PaletteBox";
             this.PaletteBox.Size = new System.Drawing.Size(80, 10);
+            this.PaletteBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.PaletteBox.TabIndex = 28;
             this.PaletteBox.TabStop = false;
             this.PaletteBox.Visible = false;
@@ -194,26 +205,6 @@
             this.GB_Details.Text = "Details:";
             this.GB_Details.Visible = false;
             // 
-            // L_Details
-            // 
-            this.L_Details.AutoSize = true;
-            this.L_Details.Location = new System.Drawing.Point(85, 16);
-            this.L_Details.Name = "L_Details";
-            this.L_Details.Size = new System.Drawing.Size(13, 65);
-            this.L_Details.TabIndex = 25;
-            this.L_Details.Text = "0\r\n0\r\n0\r\n0\r\n0";
-            this.L_Details.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // CHK_AutoSaveBCLIM
-            // 
-            this.CHK_AutoSaveBCLIM.AutoSize = true;
-            this.CHK_AutoSaveBCLIM.Location = new System.Drawing.Point(13, 91);
-            this.CHK_AutoSaveBCLIM.Name = "CHK_AutoSaveBCLIM";
-            this.CHK_AutoSaveBCLIM.Size = new System.Drawing.Size(106, 17);
-            this.CHK_AutoSaveBCLIM.TabIndex = 3;
-            this.CHK_AutoSaveBCLIM.Text = "Autosave BCLIM";
-            this.CHK_AutoSaveBCLIM.UseVisualStyleBackColor = true;
-            // 
             // L_Meta
             // 
             this.L_Meta.AutoSize = true;
@@ -224,7 +215,17 @@
             this.L_Meta.Text = "FileFormat:\r\nImage Width:\r\nImage Height:\r\nTile Width:\r\nTile Height:";
             this.L_Meta.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // Form1
+            // L_Details
+            // 
+            this.L_Details.AutoSize = true;
+            this.L_Details.Location = new System.Drawing.Point(85, 16);
+            this.L_Details.Name = "L_Details";
+            this.L_Details.Size = new System.Drawing.Size(13, 65);
+            this.L_Details.TabIndex = 25;
+            this.L_Details.Text = "0\r\n0\r\n0\r\n0\r\n0";
+            this.L_Details.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // Main
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -238,7 +239,7 @@
             this.Controls.Add(this.TB_Path);
             this.Controls.Add(this.B_Open);
             this.MinimumSize = new System.Drawing.Size(385, 365);
-            this.Name = "Form1";
+            this.Name = "Main";
             this.Text = "png2bclim";
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.tabMain_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.tabMain_DragEnter);

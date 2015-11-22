@@ -21,7 +21,7 @@ namespace CTR
 }
 namespace CTR
 {
-    class BCLIM
+    public class BCLIM
     {
         internal static void openFile(string path, bool autosave = false, bool crop = true, char format = 'X')
         {
@@ -567,7 +567,7 @@ namespace CTR
                                               0x83,0x8B,0x94,0x9C,0xA4,0xAC,0xB4,0xBD,
                                               0xC5,0xCD,0xD5,0xDE,0xE6,0xEE,0xF6,0xFF };
 
-        private static Color DecodeColor(uint val, int format)
+        internal static Color DecodeColor(uint val, int format)
         {
             int alpha = 0xFF, red, green, blue;
             switch (format)
